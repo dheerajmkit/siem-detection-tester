@@ -1,0 +1,17 @@
+# Fictional sample rule: PowerShell download cradle.
+# Fires on powershell.exe processes whose command line contains a
+# download-cradle keyword.
+title: Suspicious PowerShell download cradle
+id: demo-ps-download-001
+description: Detects PowerShell invoking common download cradles
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    Image|endswith: '\powershell.exe'
+    CommandLine|contains:
+      - 'DownloadString'
+      - 'IEX'
+  condition: selection
+level: high

