@@ -1,0 +1,20 @@
+# Fictional sample rule: credential dumping via Mimikatz.
+# Matches nothing in samples/events-silent.jsonl on purpose — a rule
+# that never fires is a test failure worth seeing.
+title: Mimikatz credential dumping
+id: demo-mimikatz-001
+description: Detects Mimikatz execution or sekurlsa usage
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection_img:
+    Image|endswith:
+      - '\mimikatz.exe'
+      - '\sekurlsa.dll'
+  selection_cli:
+    CommandLine|contains: 'sekurlsa::logonpasswords'
+  filter_admin:
+    User: 'CORP\admin-backup'
+  condition: (selection_img or selection_cli) and not filter_admin
+level: critical

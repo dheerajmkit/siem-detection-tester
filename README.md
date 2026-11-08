@@ -21,40 +21,57 @@ python3 run.py samples/rule-fires.yml samples/events-firing.jsonl
 Output:
 
 ```
-rule OK: Suspicious PowerShell download cradle
-event 0: FIRED
-event 1: -
-event 2: -
+# Detection replay report: Suspicious PowerShell download cradle
 
-1/3 event(s) fired the rule
+event 0: FIRED (matched: selection)
+event 1: - (matched: none)
+event 2: - (matched: none)
+
+Events: 3, fired: 1, not fired: 2
+True positives: 1, false positives: 0, false negatives: 0, true negatives: 2
 ```
 
 Exit codes: `2` = usage error or invalid rule, `1` = the rule fired on
 no events, `0` = the rule fired at least once.
 
-## Day-1 scope
+Machine-readable output:
 
-- Rule loading with a small built-in YAML-subset parser (no PyYAML).
-- Schema validation: required fields, selection references in the
-  condition.
-- Field matchers: exact, `|contains`, `|startswith`, `|endswith`,
-  `|re`; lists are OR, fields in one selection are AND.
-- Day-1 rule semantics: every selection must match (implicit AND).
-  Full `and`/`or`/`not` condition expressions arrive on day 2.
+```bash
+python3 run.py --json samples/rule-fires.yml samples/events-firing.jsonl
+```
+
+## Features
+
+- **Rule validation** — required fields, selection mappings, and
+  condition references are checked before anything runs.
+- **Sigma-style matchers** — exact, `|contains`, `|startswith`,
+  `|endswith`, `|re`; lists are OR, fields in one selection are AND.
+- **Full condition evaluator** — `and` / `or` / `not` with parentheses,
+  e.g. `(selection_img or selection_cli) and not filter_admin`.
+- **Replay engine** — runs the rule over JSONL events and reports per
+  event which selections matched.
+- **True/false-positive reporting** — events may carry an optional
+  `label` of `malicious`/`benign` for a confusion-matrix summary.
+- **JSON output** (`--json`) for piping into other tools.
 
 ## Project layout
 
 ```
-run.py                        # CLI: python3 run.py <rule.yml> <events.jsonl>
+run.py                        # CLI: python3 run.py [--json] <rule.yml> <events.jsonl>
 siem/
   __init__.py
   yamlmini.py                 # YAML-subset parser (maps, lists, scalars)
   loader.py                   # rule + JSONL event loading
   validator.py                # rule schema validation
   matcher.py                  # Sigma-style field matchers
+  evaluator.py                # condition expression parser + evaluator
+  replay.py                   # replay engine + TP/FP summary
+  report.py                   # text and JSON report rendering
 samples/
-  rule-fires.yml              # sample rule (fictional)
+  rule-fires.yml              # sample rule that fires (fictional)
   events-firing.jsonl         # 3 sample events, 1 fires (fictional)
+  rule-silent.yml             # sample rule that fires on nothing
+  events-silent.jsonl         # 3 benign events (fictional)
 ```
 
 ## Notes
@@ -67,7 +84,4 @@ samples/
 
 ## Roadmap
 
-- **Day 2:** full condition evaluator (`and`/`or`/`not` with
-  parentheses), replay engine with true/false-positive reporting, and
-  JSON output.
 - **Day 3:** pytest unit tests, usage docs, and a sample CI check.
