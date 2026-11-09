@@ -54,6 +54,19 @@ python3 run.py --json samples/rule-fires.yml samples/events-firing.jsonl
   `label` of `malicious`/`benign` for a confusion-matrix summary.
 - **JSON output** (`--json`) for piping into other tools.
 
+## Try it
+
+```bash
+python3 run.py samples/rule-fires.yml samples/events-firing.jsonl
+python3 run.py samples/rule-silent.yml samples/events-silent.jsonl  # fires on nothing -> exit 1
+python3 run.py --json samples/rule-fires.yml samples/events-firing.jsonl
+python3 -m pytest tests/ -v
+```
+
+See [docs/USAGE.md](docs/USAGE.md) for the rule format, matcher
+reference, and condition syntax, and
+[examples/ci-check.sh](examples/ci-check.sh) for a sample CI check.
+
 ## Project layout
 
 ```
@@ -72,16 +85,7 @@ samples/
   events-firing.jsonl         # 3 sample events, 1 fires (fictional)
   rule-silent.yml             # sample rule that fires on nothing
   events-silent.jsonl         # 3 benign events (fictional)
+tests/                        # pytest unit tests
+docs/USAGE.md                 # full usage guide
+examples/                     # sample CI check script
 ```
-
-## Notes
-
-- The YAML parser covers the subset detection rules use; it is not a
-  general YAML implementation.
-- Matching is case-sensitive, like Sigma's default for most backends.
-- Sample events use documentation IP ranges (198.51.100.0/24) and
-  fictional hostnames.
-
-## Roadmap
-
-- **Day 3:** pytest unit tests, usage docs, and a sample CI check.
